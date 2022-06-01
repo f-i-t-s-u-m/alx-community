@@ -22,5 +22,5 @@ if (mix.inProduction()) {
     mix.version();
 }
 
-mix.browserSync('192.168.0.10:8000');
+mix.browserSync('192.168.186.151:8000');
 mix.disableNotifications();

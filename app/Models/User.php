@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
+use Laravel\Jetstream\Jetstream;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -63,4 +64,17 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function hasTeams()
+    {
+        return $this->allTeams()->isNotEmpty();
+    }
+
+    public function currentTeam()
+    {
+        if (is_null($this->current_team_id) && $this->id) {
+            $this->switchTeam($this->allTeams()->first());
+        }
+        return $this->belongsTo(Jetstream::teamModel(), 'current_team_id');
+    }
 }

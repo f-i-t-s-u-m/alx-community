@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Laravel\Jetstream\Events\AddingTeamMember;
+use Laravel\Jetstream\Events\TeamMemberAdded;
 use Laravel\Jetstream\Jetstream;
 
 class CreateNewUser implements CreatesNewUsers
@@ -58,6 +60,13 @@ class CreateNewUser implements CreatesNewUsers
      */
     protected function createTeam(User $user)
     {
-        $user->ownedTeams()->save(Team::find(1));
+        $team = Team::find(1);
+        AddingTeamMember::dispatch($team, $user);
+
+        $team->users()->attach(
+            $user, ['role' => 'member']
+        );
+        TeamMemberAdded::dispatch($team, $user);
+
     }
 }
